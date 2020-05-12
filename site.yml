@@ -8,3 +8,9 @@
 - import_playbook: playbooks/ruby.yml
 - import_playbook: playbooks/monitor.yml
 - import_playbook: playbooks/nas.yml
+
+# Sample node exporter playbook
+# - import_playbook: playbooks/install_node_exporter.yml
+# - import_playbook: playbooks/upgrade.yml
+# - import_playbook: playbooks/vdev.yml
+# - import_playbook: playbooks/wireguard.yml
