@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron:  '10 */6 * * *'
+
+jobs:
+  run:
+    name: Run Ansible
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v1
+    - name: Install dependencies
+      run: pip install --upgrade pip ansible hvac pycrypto paramiko
+    - name: Get Ansible Deploy Key
+      run: echo '${{ secrets.ANSIBLE_DEPLOY_KEY }}' > deploy_rsa && chmod 600 deploy_rsa
+    - name: Get Ansible Vault password
+      run: echo '${{ secrets.ANSIBLE_VAULT_PASSWORD }}' > vault_pwd && chmod 600 vault_pwd
+    - name: Download Ansible roles
+      run: ansible-galaxy install --force --role-file requirements.yml
+    - name: Run Ansible
+      run: ansible-playbook site.yml

@@ -1,0 +1,30 @@
+---
+# Mount points
+mount_points:
+  - name: WD2T
+    path: /data
+    src: UUID=78056259-01e8-4d4b-bb3c-edc4ed1e8171
+    fstype: ext4
+
+# NFS Server (115 is the group id for @sambashare)
+nfs_exports:
+  - '/data/store *(rw,sync,all_squash,anonuid=1000,anongid=115,no_subtree_check)'
+
+# Samba Server
+samba_netbios_name: VDS
+samba_server_string: "Vlad Data Store"
+samba_workgroup: WORKGROUP
+samba_load_printers: 'no'
+samba_mitigate_cve_2017_7494: 'no'
+samba_users: "{{ vault_samba_users }}"
+samba_shares:
+  - name: DataStore
+    comment: 'Data Store'
+    path: '/data/store'
+    owner: 'vlad'
+    writable: 'yes'
+    browseable: 'yes'
+    valid_users: 'vlad @sambashare'
+    force_create_mode: '664'
+    force_directory_mode: '775'
+    group: 'sambashare'

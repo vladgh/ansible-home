@@ -1,0 +1,156 @@
+---
+- name: Development
+  hosts: vdev
+  become: yes
+  vars:
+    ## Essential packages
+    debian_software:
+      - curl
+      - libcurl4-openssl-dev
+      - libssl-dev
+      - gnupg
+      - gpg-agent
+      - htop
+      - jq
+      - tmux
+      - unzip
+      - vim
+      - wget
+      - golang
+      - zsh
+      - powerline
+      - fonts-powerline
+      - nmap
+      - sshpass
+      - qrencode
+      - mlocate
+    ## Python packages
+    pip_package: python3-pip
+    pip_install_packages:
+      - boto3
+      - docker
+      - flake8
+      - molecule
+      - pylint
+      - ssh2
+      - virtualenv
+      - nvchecker
+      - httpx
+      - jsondiff
+      - pyyaml
+    hub_version: 2.14.2
+  roles:
+    - hashicorp
+    - role: shellcheck
+      when: shellcheck_install is defined and shellcheck_install|bool
+  tasks:
+    - name: Install essential software (Debian/Ubuntu)
+      apt:
+        name: "{{ debian_software }}"
+        state: present
+        update_cache: yes
+      when: ansible_os_family == "Debian" and debian_software is defined and debian_software
+      register: task_result
+      until: task_result is success
+      retries: 3
+      delay: 2
+    - name: Ensure Pip is installed.
+      package:
+        name: "{{ pip_package }}"
+        state: present
+    - name: Ensure pip_install_packages are installed.
+      become: yes
+      become_user: vlad
+      pip:
+        name: "{{ pip_install_packages }}"
+        state: latest
+        executable: "{{ 'pip3' if pip_package.startswith('python3') else 'pip' }}"
+    - name: Install System Ruby
+      apt:
+        name:
+          - ruby
+          - ruby-dev
+        state: present
+    - name: Install Ruby Gems
+      gem:
+        name: github_changelog_generator
+        state: present
+        user_install: no
+    - name: Install Microsoft Repo
+      apt:
+        deb: "https://packages.microsoft.com/config/{{ ansible_distribution | lower }}/{{ ansible_distribution_version }}/packages-microsoft-prod.deb"
+        update_cache: yes
+    # - name: Install PowerShell Core
+    #   apt:
+    #     name: powershell
+    - name: Install GitHub CLI
+      apt:
+        deb: https://github.com/cli/cli/releases/download/v0.6.4/gh_0.6.4_linux_amd64.deb
+    - name: Check if GitHub Hub is installed
+      shell: command -v hub >/dev/null 2>&1
+      register: hub_installed
+      changed_when: hub_installed.rc != 0
+      failed_when: false
+    - name: Download GitHub Hub
+      get_url:
+        url: "https://github.com/github/hub/releases/download/v{{ hub_version }}/hub-linux-amd64-{{ hub_version }}.tgz"
+        dest: "/tmp/hub-linux-amd64-{{ hub_version }}.tgz"
+        mode: '644'
+      when: hub_installed is changed
+    - name: Unarchive GitHub Hub
+      unarchive:
+        src: "/tmp/hub-linux-amd64-{{ hub_version }}.tgz"
+        dest: /tmp
+      when: hub_installed is changed
+    - name: Install GitHub Hub
+      copy:
+        src: "/tmp/hub-linux-amd64-{{ hub_version }}/bin/hub"
+        dest: /usr/local/bin/hub
+        remote_src: yes
+        mode: '755'
+      when: hub_installed is changed
+    - name: Install diff-so-fancy
+      get_url:
+        url: https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy
+        dest: /usr/local/bin/diff-so-fancy
+        mode: '755'
+    - name: Install Keybase
+      apt:
+        deb: https://prerelease.keybase.io/keybase_amd64.deb
+    - name: Ensure Git Package
+      package:
+        name: git
+        state: present
+    - name: Check if AWS CLI v2 is installed
+      shell: command -v aws >/dev/null 2>&1 && aws --version | grep -q 'aws-cli/2' >/dev/null
+      register: aws_cli_installed
+      changed_when: aws_cli_installed.rc != 0
+      failed_when: false
+    - name: Download AWS CLI v2
+      get_url:
+        url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+        dest: /tmp/awscli-exe-linux-x86_64.zip
+        mode: '644'
+      when: aws_cli_installed is changed
+    - name: Unarchive AWS CLI v2
+      unarchive:
+        src: /tmp/awscli-exe-linux-x86_64.zip
+        dest: /tmp
+      when: aws_cli_installed is changed
+    - name: Install AWS CLI v2
+      shell: /tmp/aws/install
+      when: aws_cli_installed is changed
+    - name: Add VGS repository
+      git:
+        repo: https://github.com/vghn/vgs.git
+        version: master
+        dest: /opt/vgs
+        umask: '002'
+        force: yes
+    - name: Add Vlad's Dotfiles
+      git:
+        repo: https://github.com/vladgh/dotfiles.git
+        version: master
+        dest: /opt/dotfiles
+        umask: '002'
+        force: yes

@@ -1,0 +1,9 @@
+# Private
+.env
+
+# Ansible
+deploy_rsa
+vault_pwd
+
+# Other
+/tmp

@@ -1,0 +1,29 @@
+---
+- name: Provision Ansible
+  hosts: all
+  become: yes
+  gather_facts: false
+  pre_tasks:
+  - name: Install Python for Ansible
+    package:
+      name: python3
+      state: present
+  - name: Provision Ansible user
+    user:
+      name: ansible
+      uid: 9999
+  - name: Provision Ansible user authorized keys
+    authorized_key:
+      user: ansible
+      key: "{{ lookup('file', '../deploy_rsa.pub') }}"
+      exclusive: yes
+  - name: Add Ansible user to Sudoers
+    lineinfile:
+      path: /etc/sudoers.d/00_ansible
+      line: 'ansible ALL=(ALL) NOPASSWD: ALL'
+      state: present
+      mode: 0440
+      create: yes
+      validate: 'visudo -cf %s'
+  - name: Gathering Facts
+    setup:

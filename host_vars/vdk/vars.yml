@@ -1,0 +1,21 @@
+---
+# Mount points
+mount_points:
+  - name: DataStore
+    path: /data/store
+    src: 192.168.1.11:/data/store
+    opts: hard,rsize=1048576,wsize=1048576,timeo=600,retrans=2,_netdev
+    fstype: nfs
+    owner: vlad
+    group: 115
+
+# Docker
+docker_users:
+  - vlad
+
+# Cron Jobs
+cron_jobs:
+  - name: Docker CleanUp
+    minute: '2'
+    hour: '2'
+    job: docker system prune --force 2>&1 | /usr/bin/logger -t DockerCleanUp
