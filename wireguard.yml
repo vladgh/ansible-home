@@ -1,0 +1,102 @@
+---
+- name: WireGuard Configuration
+  hosts: vbs
+  vars:
+    sysctl_config:
+      net.ipv4.ip_forward: 1
+      net.ipv4.conf.all.forwarding: 1
+      net.ipv6.conf.all.forwarding: 1
+  tasks:
+    - name: Load secrets
+      include_vars: "~/projects/.vgh/wireguard/env.yml"
+    - name: Generate server config
+      no_log: true
+      delegate_to: localhost
+      copy:
+        content: |
+          [Interface]
+          Address = {{ server['Address'] }}
+          ListenPort = {{ server['Port'] }}
+          PrivateKey = {{ server['PrivateKey'] }}
+          PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ server['NetworkInterface'] }} -j MASQUERADE; ip6tables -A FORWARD -i %i -j ACCEPT; ip6tables -A FORWARD -o %i -j ACCEPT; ip6tables -t nat -A POSTROUTING -o {{ server['NetworkInterface'] }} -j MASQUERADE
+          PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ server['NetworkInterface'] }} -j MASQUERADE; ip6tables -D FORWARD -i %i -j ACCEPT; ip6tables -D FORWARD -o %i -j ACCEPT; ip6tables -t nat -D POSTROUTING -o {{ server['NetworkInterface'] }} -j MASQUERADE
+          {% for client in clients %}
+
+          # {{ client }}
+          [Peer]
+          PublicKey = {{ clients[client]['PublicKey'] }}
+          PresharedKey = {{ clients[client]['PresharedKey'] }}
+          AllowedIPs = {{ clients[client]['ServerAllowedIPs'] }}
+          PersistentKeepalive = 25
+          {% endfor %}
+        dest: "~/projects/.vgh/wireguard/{{ server['Interface'] }}.conf"
+        mode: '600'
+    - name: Ensure client directory exists
+      no_log: true
+      delegate_to: localhost
+      file:
+        path: "~/projects/.vgh/wireguard/{{ item.key }}"
+        state: directory
+        mode: '700'
+      with_dict: "{{ clients }}"
+    - name: Generate client config
+      no_log: true
+      delegate_to: localhost
+      copy:
+        content: |
+          [Interface]
+          PrivateKey = {{ item.value['PrivateKey'] }}
+          Address = {{ item.value['Address'] }}
+          DNS = 1.1.1.1, 1.0.0.1
+
+          [Peer]
+          Endpoint = {{ server['Endpoint'] }}
+          PublicKey = {{ server['PublicKey'] }}
+          PresharedKey = {{ item.value['PresharedKey'] }}
+          AllowedIPs = {{ item.value['ClientAllowedIPs'] }}
+        dest: "~/projects/.vgh/wireguard/{{ item.key }}/{{ server['Interface'] }}.conf"
+        mode: '600'
+      with_dict: "{{ clients }}"
+    - name: Ensure WireGuard package is installed
+      become: yes
+      apt:
+        name:
+          - wireguard
+          - wireguard-tools
+    - name: Change various sysctl-settings
+      become: yes
+      sysctl:
+        name: '{{ item.key }}'
+        value: '{{ item.value }}'
+        sysctl_set: yes
+        state: present
+        reload: yes
+      with_dict: '{{ sysctl_config }}'
+    - name: Install server config
+      become: yes
+      copy:
+        src: "~/projects/.vgh/wireguard/{{ server['Interface'] }}.conf"
+        dest: "/etc/wireguard/{{ server['Interface'] }}.conf"
+        mode: '600'
+      notify:
+        - Restart WireGuard
+  handlers:
+    - name: Restart WireGuard
+      become: yes
+      service:
+        name: "wg-quick@{{ server['Interface'] }}"
+        enabled: yes
+        state: restarted
+
+# # MISC
+# # Start Wireguard (wg-quick up wg0 OR wg-quick down wg0)
+# sudo systemctl start wg-quick@wg0
+# # Enable the Wireguard service to automatically restart on boot
+# sudo systemctl enable wg-quick@wg0
+# # Check if the VPN tunnel is running with the following two commands
+# sudo wg show
+# sudo ifconfig wg0
+# sudo systemctl status wg-quick@wg0
+# sudo systemctl restart wg-quick@wg0
+# # Generate client QR code
+# qrencode -t ansiutf8 < ~/projects/.vgh/wireguard/clients/iPhoneV/wg0.conf

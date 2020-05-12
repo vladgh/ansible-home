@@ -1,0 +1,12 @@
+---
+- name: NFS Servers
+  hosts: nfs_servers
+  become: yes
+  roles:
+    - geerlingguy.nfs
+
+- name: Samba Servers
+  hosts: samba_servers
+  become: yes
+  roles:
+    - bertvv.samba

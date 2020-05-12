@@ -1,0 +1,41 @@
+---
+# Essential packages
+debian_software:
+  - wireguard
+
+# OS Hardening
+sysctl_overwrite:
+  # Enable IPv4 traffic forwarding
+  net.ipv4.ip_forward: 1
+  # Do not disable IPv6
+  net.ipv6.conf.all.disable_ipv6: 0
+  # Enable IPv6 traffic forwarding
+  net.ipv6.conf.all.forwarding: 1
+  # Increase the amount of inotify watchers
+  fs.inotify.max_user_watches: 524288
+  # Do not change the default PTRACE value
+  kernel.yama.ptrace_scope: 0
+
+# SSH Hardening
+# Needed for Duplicacy SFTP
+sftp_enabled: true
+# Needed for the bastion host or for Visual Studio Code Remote SSH Connection
+ssh_allow_tcp_forwarding: 'yes'
+
+# Security
+security_autoupdate_enabled: true
+security_fail2ban_enabled: true
+
+# # Firewall
+# firewall_allowed_tcp_ports:
+#   - '22' # SSH
+#   - '9100' # Prometheus
+# firewall_allowed_udp_ports:
+#   - '9473' # WireGuard
+# firewall_additional_rules:
+#   # WireGuard rules (IPv4 & IPv6)
+#   - "iptables -A FORWARD -i wg0 -j ACCEPT"
+#   - "iptables -t nat -A POSTROUTING -o {{ ansible_default_ipv4.alias }} -j MASQUERADE"
+#   - "ip6tables -A FORWARD -i wg0 -j ACCEPT"
+#   - "ip6tables -t nat -A POSTROUTING -o {{ ansible_default_ipv4.alias }} -j MASQUERADE"
+
