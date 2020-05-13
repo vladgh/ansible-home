@@ -9,7 +9,7 @@ on:
 
 jobs:
   run:
-    name: Run Ansible
+    name: Ansible
     runs-on: ubuntu-latest
     env:
       ANSIBLE_FORCE_COLOR: '1'
