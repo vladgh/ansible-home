@@ -1,6 +1,6 @@
 ---
 # Settings applicable to KVM, ESXi etc
-- name: Virtual machine configurations
+- name: Virtual Machine
   hosts: vm
   become: yes
   roles:
