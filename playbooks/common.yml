@@ -1,5 +1,5 @@
 ---
-- name: Common tasks on all nodes
+- name: Common
   hosts: all
   become: yes
   roles:
