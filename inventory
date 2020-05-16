@@ -28,7 +28,7 @@ vdev
 [samba_servers]
 vds
 
-[vm]
+[virtual]
 vbs
 vdev
 vdk
