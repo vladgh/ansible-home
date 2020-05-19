@@ -39,13 +39,3 @@ shellcheck_install: 'yes'
 apt_repositories:
   - name: GIT
     repo: ppa:git-core/ppa
-
-# Mount points
-mount_points:
-  - name: DataStore
-    path: /data/store
-    src: 192.168.1.11:/data/store
-    opts: hard,rsize=1048576,wsize=1048576,timeo=600,retrans=2,_netdev
-    fstype: nfs
-    owner: vlad
-    group: 115

@@ -7,7 +7,7 @@ mount_points:
     opts: hard,rsize=1048576,wsize=1048576,timeo=600,retrans=2,_netdev
     fstype: nfs
     owner: vlad
-    group: 115
+    group: vlad
 
 # Docker
 docker_users:

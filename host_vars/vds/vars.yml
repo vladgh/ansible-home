@@ -5,10 +5,14 @@ mount_points:
     path: /data
     src: UUID=78056259-01e8-4d4b-bb3c-edc4ed1e8171
     fstype: ext4
+  - name: EncryptedDataStore
+    path: /data/encrypted
+    src: UUID=0b86bdb1-33b7-4a47-810b-ebc0392f63f4
+    fstype: ext4
 
 # NFS Server (115 is the group id for @sambashare)
 nfs_exports:
-  - '/data/store *(rw,sync,all_squash,anonuid=1000,anongid=115,no_subtree_check)'
+  - '/data/store *(rw,sync,all_squash,anonuid=1000,anongid=1000,no_subtree_check)'
 
 # Samba Server
 samba_netbios_name: VDS
@@ -21,20 +25,22 @@ samba_shares:
   - name: DataStore
     comment: 'Data Store'
     path: '/data/store'
+    public: 'no'
     writable: 'yes'
     browseable: 'yes'
-    valid_users: 'vlad @sambashare'
+    valid_users: 'vlad'
     owner: 'vlad'
-    group: 'sambashare'
+    group: 'vlad'
     create_mode: '0664'
     force_create_mode: '0664'
     directory_mode: '0775'
     force_directory_mode: '0775'
   - name: EncryptedDataStore
     comment: 'Encrypted Data Store'
-    path: '/encrypted_data/store'
+    path: '/data/encrypted/store'
+    public: 'no'
     writable: 'yes'
-    browseable: 'yes'
+    browseable: 'no'
     valid_users: 'vlad'
     owner: 'vlad'
     group: 'vlad'
