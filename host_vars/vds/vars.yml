@@ -19,7 +19,6 @@ samba_netbios_name: VDS
 samba_server_string: "Vlad Data Store"
 samba_workgroup: WORKGROUP
 samba_load_printers: 'no'
-samba_mitigate_cve_2017_7494: 'no'
 samba_users: "{{ vault_samba_users }}"
 samba_shares:
   - name: DataStore
