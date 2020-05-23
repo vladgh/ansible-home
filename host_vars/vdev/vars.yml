@@ -32,4 +32,4 @@ smtp_server_address: smtp.sendgrid.net
 smtp_server_port: 587
 smtp_from: Vlad <vlad@ghn.me>
 smtp_user: apikey
-smtp_password: {{ vault_smtp_password }}
+smtp_password: "{{ vault_smtp_password }}"
