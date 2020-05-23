@@ -22,20 +22,14 @@ cron_jobs:
     hour: '2'
     job: docker system prune --force 2>&1 | /usr/bin/logger -t DockerCleanUp
 
-# Hashicorp Packages
-packer_install: 'yes'
-terraform_install: 'yes'
-vault_install: 'yes'
-
-# # Ruby
-# rvm1_rubies: ['ruby-2.7.0']
-# rvm1_user: 'vlad'
-# rvm1_rvm_version: 'stable'
-
-# Shellcheck
-shellcheck_install: 'yes'
-
 # Apt repositories
 apt_repositories:
   - name: GIT
     repo: ppa:git-core/ppa
+
+# SMTP
+smtp_server_address: smtp.sendgrid.net
+smtp_server_port: 587
+smtp_from: Vlad <vlad@ghn.me>
+smtp_user: apikey
+smtp_password: {{ vault_smtp_password }}
