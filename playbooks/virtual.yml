@@ -3,7 +3,7 @@
   hosts: virtual
   become: yes
   roles:
-    - qemu_guest-agent
+    - vladgh.qemu_guest-agent
   tasks:
     # The timesyncd service provided by systemd conflicts with the ntp service (which we need for timezone) on Ubuntu 18 VMs
     - name: Disable systemd-timesyncd.service - Network Time Synchronization
