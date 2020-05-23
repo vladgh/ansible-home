@@ -20,6 +20,6 @@
 
 - src: vladgh.common
 - src: vladgh.hashicorp
-- src: vladgh.qemu-guest-agent
+- src: vladgh.qemu_guest_agent
 - src: vladgh.shellcheck
 - src: vladgh.smtp
