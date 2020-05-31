@@ -1,5 +1,5 @@
 [docker]
-vdev
+vdv
 vdk
 
 [firewall]
@@ -9,7 +9,7 @@ vbs
 
 [monitor]
 vbs
-vdev
+vdv
 vdk
 vds
 vpi
@@ -21,7 +21,7 @@ vds
 vpi
 
 [prometheus]
-vdev
+vdv
 
 [ruby]
 
@@ -30,6 +30,6 @@ vds
 
 [virtual]
 vbs
-vdev
+vdv
 vdk
 vds
