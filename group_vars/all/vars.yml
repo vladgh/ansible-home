@@ -43,3 +43,6 @@ cloudflare_dns_records:
     type: A
     record: vds.home
     value: 192.168.1.11
+
+# Slack
+slack_token: "{{ vault_slack_token }}"
