@@ -10,9 +10,10 @@ mount_points:
     src: UUID=0b86bdb1-33b7-4a47-810b-ebc0392f63f4
     fstype: ext4
 
-# NFS Server (115 is the group id for @sambashare)
+# NFS Server
 nfs_exports:
   - '/data/store *(rw,sync,all_squash,anonuid=1000,anongid=1000,no_subtree_check)'
+  - '/data/vm *(rw,sync,all_squash,anonuid=1000,anongid=1000,no_subtree_check)'
 
 # Samba Server
 samba_netbios_name: VDS
