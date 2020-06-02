@@ -28,6 +28,12 @@ vdev
 [samba_servers]
 vds
 
+[slack]
+vbs
+vdev
+vdk
+vds
+
 [virtual]
 vbs
 vdev
