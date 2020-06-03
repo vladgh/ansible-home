@@ -12,13 +12,13 @@ vbs
 vdev
 vdk
 vds
-vpi
+#vpi
 
 [nfs_servers]
 vds
 
 [pis]
-vpi
+#vpi
 
 [prometheus]
 vdev
