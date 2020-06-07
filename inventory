@@ -13,6 +13,7 @@ vdev
 vdk
 vds
 #vpi
+vph
 
 [nfs_servers]
 vds
@@ -39,3 +40,4 @@ vbs
 vdev
 vdk
 vds
+vph

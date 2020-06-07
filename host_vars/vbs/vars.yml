@@ -1,6 +1,6 @@
 ---
-# Essential packages
-debian_software:
+# Additional packages
+additional_packages:
   - wireguard
 
 # OS Hardening
