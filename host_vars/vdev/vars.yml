@@ -1,12 +1,10 @@
 ---
-# Development
-
 # Accounts
-accounts:
+local_users:
   - name: vlad
     comment: Vlad Ghinea
     groups: admins
-    append: 'yes'
+    append: yes
     shell: /bin/zsh
     authorized_keys:
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE0yyqRUbBGOW9PcYyuaUMaRi/EFwL59E3wwMn5dJAKQ vlad@ghn.me
@@ -24,8 +22,51 @@ cron_jobs:
 
 # Apt repositories
 apt_repositories:
-  - name: GIT
-    repo: ppa:git-core/ppa
+  # - name: GIT
+  #   repo: 'ppa:git-core/ppa'
+  - name: Git
+    repo: "deb http://ppa.launchpad.net/git-core/ppa/ubuntu {{ ansible_distribution_release }} main"
+
+# APT packages
+additional_packages:
+  - curl
+  - libcurl4-openssl-dev
+  - libssl-dev
+  - gnupg
+  - gpg-agent
+  - htop
+  - jq
+  - tmux
+  - unzip
+  - vim
+  - wget
+  - golang
+  - zsh
+  - powerline
+  - fonts-powerline
+  - nmap
+  - sshpass
+  - qrencode
+  - mlocate
+
+# PIP
+pip_user_install_packages:
+  - user: vlad
+    packages:
+      - ansible
+      - ansible-lint
+      - molecule
+      - docker
+      - boto3
+      - flake8
+      - pylint
+      - ssh2
+      - virtualenv
+      - nvchecker
+      - httpx
+      - jsondiff
+      - pyyaml
+    state: latest
 
 # SMTP
 smtp_server_address: smtp.sendgrid.net
@@ -33,3 +74,15 @@ smtp_server_port: 587
 smtp_from: Vlad <vlad@ghn.me>
 smtp_user: apikey
 smtp_password: "{{ vault_smtp_password }}"
+
+# Mount points
+mount_points:
+  - name: DataStore
+    path: /data/store
+    src: 192.168.1.11:/data/store
+    opts: hard,rsize=1048576,wsize=1048576,timeo=600,retrans=2,_netdev
+    fstype: nfs
+
+# GitHub
+github_hub_version: 2.14.2  # https://github.com/github/hub/releases
+github_cli_version: 0.9.0  # https://github.com/cli/cli/releases

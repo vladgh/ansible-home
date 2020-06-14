@@ -1,3 +1,10 @@
+#vpi
+#vtx
+vbs
+vdev
+vdk
+vds
+
 [docker]
 vdev
 vdk
@@ -8,12 +15,12 @@ vdk
 vbs
 
 [monitor]
+#vpi
+#vtx
 vbs
 vdev
 vdk
 vds
-#vpi
-vph
 
 [nfs_servers]
 vds
@@ -30,6 +37,8 @@ vdev
 vds
 
 [slack]
+#vpi
+#vtx
 vbs
 vdev
 vdk
@@ -40,4 +49,3 @@ vbs
 vdev
 vdk
 vds
-vph

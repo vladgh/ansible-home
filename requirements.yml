@@ -8,7 +8,6 @@
 - src: geerlingguy.nfs
 - src: geerlingguy.ntp
 - src: geerlingguy.pip
-- src: geerlingguy.repo-epel
 - src: geerlingguy.security
 - src: geerlingguy.swap
 - src: rvm.ruby
@@ -19,6 +18,9 @@
   version: master
 - src: https://github.com/vladgh/ansible-role-hashicorp.git
   name: vladgh.hashicorp
+  version: master
+- src: https://github.com/vladgh/ansible-role-postfix.git
+  name: vladgh.postfix
   version: master
 - src: https://github.com/vladgh/ansible-role-qemu_guest_agent.git
   name: vladgh.qemu_guest_agent

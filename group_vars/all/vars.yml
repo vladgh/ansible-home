@@ -6,11 +6,15 @@ deploy_ssh_rsa: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDmv0M0KB/ZFGaja4p7A7f5p3cn
 timezone: US/Central
 
 # Accounts
-accounts:
+local_groups:
+  - name: admins
+    system: yes
+    sudo: yes
+local_users:
   - name: vlad
     comment: Vlad Ghinea
     groups: admins
-    append: 'yes'
+    append: yes
     shell: /bin/bash
     authorized_keys:
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE0yyqRUbBGOW9PcYyuaUMaRi/EFwL59E3wwMn5dJAKQ vlad@ghn.me
@@ -21,28 +25,8 @@ cloudflare_api_token: "{{ vault_cloudflare_api_token }}"
 cloudflare_dns_records:
   - zone: ghn.me
     type: A
-    record: vnuc.home
-    value: 192.168.1.2
-  - zone: ghn.me
-    type: A
-    record: pi.home
-    value: 192.168.1.3
-  - zone: ghn.me
-    type: A
-    record: vdk.home
-    value: 192.168.1.4
-  - zone: ghn.me
-    type: A
-    record: vbs.home
-    value: 192.168.1.5
-  - zone: ghn.me
-    type: A
     record: vdev.home
     value: 192.168.1.10
-  - zone: ghn.me
-    type: A
-    record: vds.home
-    value: 192.168.1.11
 
 # Slack
 slack_token: "{{ vault_slack_token }}"

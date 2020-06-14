@@ -1,4 +1,27 @@
 ---
+# Accounts
+local_groups:
+  - name: admins
+    system: yes
+    sudo: yes
+  - name: vgh
+    gid: 8844
+local_users:
+  - name: vlad
+    comment: Vlad Ghinea
+    groups:
+      - admins
+      - vgh
+    append: 'yes'
+    shell: /bin/bash
+    authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE0yyqRUbBGOW9PcYyuaUMaRi/EFwL59E3wwMn5dJAKQ vlad@ghn.me
+  - name: alice
+    shell: /usr/sbin/nologin
+    create_home: no
+    groups:
+      - vgh
+
 # Mount points
 mount_points:
   - name: WD2T
@@ -28,9 +51,9 @@ samba_shares:
     public: 'no'
     writable: 'yes'
     browseable: 'yes'
-    valid_users: 'vlad'
+    valid_users: 'vlad alice @vgh'
     owner: 'vlad'
-    group: 'vlad'
+    group: 'vgh'
     create_mode: '0664'
     force_create_mode: '0664'
     directory_mode: '0775'
@@ -41,10 +64,10 @@ samba_shares:
     public: 'no'
     writable: 'yes'
     browseable: 'no'
-    valid_users: 'vlad'
+    valid_users: 'vlad alice @vgh'
     owner: 'vlad'
-    group: 'vlad'
-    create_mode: '0600'
-    force_create_mode: '0600'
-    directory_mode: '0700'
-    force_directory_mode: '0700'
+    group: 'vgh'
+    create_mode: '0660'
+    force_create_mode: '0660'
+    directory_mode: '0770'
+    force_directory_mode: '0770'
