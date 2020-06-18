@@ -21,11 +21,11 @@ cron_jobs:
     job: docker system prune --force 2>&1 | /usr/bin/logger -t DockerCleanUp
 
 # Apt repositories
-apt_repositories:
+# apt_repositories:
   # - name: GIT
   #   repo: 'ppa:git-core/ppa'
-  - name: Git
-    repo: "deb http://ppa.launchpad.net/git-core/ppa/ubuntu {{ ansible_distribution_release }} main"
+  # - name: Git
+  #   repo: "deb http://ppa.launchpad.net/git-core/ppa/ubuntu {{ ansible_distribution_release }} main"
 
 # APT packages
 additional_packages:

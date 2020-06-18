@@ -7,4 +7,3 @@
       slack:
         token: "{{ slack_token }}"
         msg: "Ansible run completed on `{{ inventory_hostname }}`"
-      delegate_to: localhost

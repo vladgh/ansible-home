@@ -26,11 +26,11 @@ local_users:
 mount_points:
   - name: WD2T
     path: /data
-    src: UUID=78056259-01e8-4d4b-bb3c-edc4ed1e8171
+    src: UUID="78056259-01e8-4d4b-bb3c-edc4ed1e8171"
     fstype: ext4
   - name: EncryptedDataStore
     path: /data/encrypted
-    src: UUID=0b86bdb1-33b7-4a47-810b-ebc0392f63f4
+    src: UUID="0b86bdb1-33b7-4a47-810b-ebc0392f63f4"
     fstype: ext4
 
 # NFS Server
