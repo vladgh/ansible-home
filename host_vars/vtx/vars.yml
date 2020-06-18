@@ -1,0 +1,4 @@
+---
+# APT packages
+additional_packages:
+  - lm-sensors

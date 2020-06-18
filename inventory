@@ -1,9 +1,8 @@
-#vpi
-#vtx
 vbs
 vdev
 vdk
 vds
+vtx
 
 [docker]
 vdev
@@ -14,19 +13,22 @@ vdk
 [harden]
 vbs
 
+[hypervisor]
+vtx
+
+[lxc]
+
 [monitor]
-#vpi
-#vtx
 vbs
 vdev
 vdk
 vds
+vtx
 
 [nfs_servers]
 vds
 
 [pis]
-#vpi
 
 [prometheus]
 vdev
@@ -37,12 +39,11 @@ vdev
 vds
 
 [slack]
-#vpi
-#vtx
 vbs
 vdev
 vdk
 vds
+vtx
 
 [virtual]
 vbs
