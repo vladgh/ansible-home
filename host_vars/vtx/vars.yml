@@ -1,4 +1,20 @@
 ---
-# APT packages
+# Packages
 additional_packages:
-  - lm-sensors
+  - tmux
+  - vim
+
+# EMail
+postfix_relayhost: smtp.sendgrid.net
+postfix_relayhost_port: 587
+postfix_relaytls: true
+postfix_smtp_tls_cafile: /etc/ssl/certs/ca-certificates.crt
+postfix_sasl_user: apikey
+postfix_sasl_password: "{{ vault_postfix_sasl_password }}"
+postfix_aliases:
+  - user: root
+    alias: vlad@ghn.me
+postfix_header_checks:
+  - pattern: '/From:.*/'
+    action: 'REPLACE'
+    text: 'From: Vlad <vlad@ghn.me>'

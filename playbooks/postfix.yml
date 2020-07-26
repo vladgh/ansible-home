@@ -1,0 +1,6 @@
+---
+- name: Postfix
+  hosts: postfix
+  become: yes
+  roles:
+    - oefenweb.postfix

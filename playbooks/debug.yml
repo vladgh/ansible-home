@@ -1,7 +1,13 @@
 ---
 - name: Debug
   hosts: all
+  vars:
+    testvar: "{{ inventory_hostname }}"
   tasks:
     - name: Display all variables/facts known for a host
       debug:
         var: hostvars[inventory_hostname]
+    - name: Debug message
+      debug:
+        msg: "Hostname is {{ testvar }}"
+      when: testvar is defined and testvar

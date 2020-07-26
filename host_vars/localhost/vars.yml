@@ -1,0 +1,24 @@
+---
+# DNS
+cloudflare_email: "{{ vault_cloudflare_email }}"
+cloudflare_api_token: "{{ vault_cloudflare_api_token }}"
+cloudflare_dns_records:
+  - zone: ghn.me
+    type: A
+    record: vdk.home
+    value: 192.168.10.4
+  - zone: ghn.me
+    type: A
+    record: vdev.home
+    value: 192.168.10.10
+  - zone: ghn.me
+    type: A
+    record: vds.home
+    value: 192.168.10.11
+  - zone: ghn.me
+    type: A
+    record: vtx.home
+    value: 192.168.10.254
+
+# Slack
+slack_token: "{{ vault_slack_token }}"

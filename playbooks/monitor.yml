@@ -3,4 +3,5 @@
   hosts: monitor
   become: yes
   roles:
+    - vladgh.logs
     - cloudalchemy.node-exporter

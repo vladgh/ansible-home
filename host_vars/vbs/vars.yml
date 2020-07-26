@@ -1,7 +1,26 @@
 ---
-# Additional packages
-additional_packages:
-  - wireguard
+# System
+timezone: US/Central
+
+# Accounts
+local_groups:
+  - name: admins
+    gid: 8236
+    system: yes
+    sudo: yes
+  - name: vgh
+    gid: 8446
+local_users:
+  - name: vlad
+    comment: Vlad Ghinea
+    uid: 8523
+    groups:
+      - admins
+      - vgh
+    append: 'yes'
+    shell: /bin/bash
+    authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE0yyqRUbBGOW9PcYyuaUMaRi/EFwL59E3wwMn5dJAKQ vlad@ghn.me
 
 # OS Hardening
 sysctl_overwrite:
@@ -39,3 +58,25 @@ security_fail2ban_enabled: true
 #   - "ip6tables -A FORWARD -i wg0 -j ACCEPT"
 #   - "ip6tables -t nat -A POSTROUTING -o {{ ansible_default_ipv4.alias }} -j MASQUERADE"
 
+# EMail
+postfix_relayhost: smtp.sendgrid.net
+postfix_relayhost_port: 587
+postfix_relaytls: true
+postfix_smtp_tls_cafile: /etc/ssl/certs/ca-certificates.crt
+postfix_sasl_user: apikey
+postfix_sasl_password: "{{ vault_postfix_sasl_password }}"
+postfix_aliases:
+  - user: root
+    alias: vlad@ghn.me
+postfix_header_checks:
+  - pattern: '/From:.*/'
+    action: 'REPLACE'
+    text: 'From: Vlad <vlad@ghn.me>'
+
+# Packages
+additional_packages:
+  - trash-cli
+
+# WireGuard
+wireguard_server: "{{ vault_wireguard_server }}"
+wireguard_clients: "{{ vault_wireguard_clients }}"

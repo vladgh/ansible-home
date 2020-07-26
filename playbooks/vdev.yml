@@ -1,0 +1,112 @@
+---
+- name: Development
+  hosts: vdev
+  become: yes
+  roles:
+    - vladgh.hashicorp
+    - vladgh.shellcheck
+  tasks:
+    - name: Install System Ruby
+      apt:
+        name:
+          - ruby
+          - ruby-dev
+        state: present
+    - name: Install Ruby Gems
+      gem:
+        name: github_changelog_generator
+        state: present
+        user_install: no
+    - name: Install Microsoft Repo
+      apt:
+        deb: "https://packages.microsoft.com/config/{{ ansible_distribution | lower }}/{{ ansible_distribution_version }}/packages-microsoft-prod.deb"
+        update_cache: yes
+        cache_valid_time: '3600'
+    # - name: Install PowerShell Core
+    #   apt:
+    #     name: powershell
+    - name: Install GitHub CLI
+      apt:
+        deb: "https://github.com/cli/cli/releases/download/v{{ github_cli_version }}/gh_{{ github_cli_version }}_linux_amd64.deb"
+    - name: Check if GitHub Hub is installed
+      shell: command -v hub >/dev/null 2>&1
+      register: hub_installed
+      changed_when: hub_installed.rc != 0
+      failed_when: false
+    - name: Download GitHub Hub
+      get_url:
+        url: "https://github.com/github/hub/releases/download/v{{ github_hub_version }}/hub-linux-amd64-{{ github_hub_version }}.tgz"
+        dest: "/tmp/hub-linux-amd64-{{ github_hub_version }}.tgz"
+        mode: '0644'
+      when: hub_installed is changed
+    - name: Unarchive GitHub Hub
+      unarchive:
+        src: "/tmp/hub-linux-amd64-{{ github_hub_version }}.tgz"
+        dest: /tmp
+      when: hub_installed is changed
+    - name: Install GitHub Hub
+      copy:
+        src: "/tmp/hub-linux-amd64-{{ github_hub_version }}/bin/hub"
+        dest: /usr/local/bin/hub
+        remote_src: yes
+        mode: '0755'
+      when: hub_installed is changed
+    - name: Install diff-so-fancy
+      get_url:
+        url: https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy
+        dest: /usr/local/bin/diff-so-fancy
+        mode: '0755'
+    # - name: Install Keybase
+    #   apt:
+    #     deb: https://prerelease.keybase.io/keybase_amd64.deb
+    - name: Ensure Git Package
+      package:
+        name: git
+        state: present
+    - name: Check if AWS CLI v2 is installed
+      shell: command -v aws >/dev/null 2>&1 && aws --version | grep -q 'aws-cli/2' >/dev/null
+      register: aws_cli_installed
+      changed_when: aws_cli_installed.rc != 0
+      failed_when: false
+    - name: Download AWS CLI v2
+      get_url:
+        url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+        dest: /tmp/awscli-exe-linux-x86_64.zip
+        mode: '0644'
+      when: aws_cli_installed is changed
+    - name: Unarchive AWS CLI v2
+      unarchive:
+        src: /tmp/awscli-exe-linux-x86_64.zip
+        dest: /tmp
+      when: aws_cli_installed is changed
+    - name: Install AWS CLI v2
+      shell: /tmp/aws/install
+      when: aws_cli_installed is changed
+    - name: Add VGS repository
+      git:
+        repo: https://github.com/vghn/vgs.git
+        version: master
+        dest: /opt/vgs
+        umask: '002'
+        force: yes
+    - name: Add Vlad's Dotfiles
+      git:
+        repo: https://github.com/vladgh/dotfiles.git
+        version: master
+        dest: /opt/dotfiles
+        umask: '002'
+        force: yes
+
+- name: Upgrades
+  hosts: all
+  become: yes
+  tasks:
+    - name: Check PIHole is installed
+      register: pihole
+      stat:
+        path: /usr/local/bin/pihole
+    - name: Update PiHole
+      shell: /usr/local/bin/pihole -up
+      register: pihole_update
+      changed_when: "'update available' in pihole_update.stdout"
+      when: pihole.stat.exists

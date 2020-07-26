@@ -1,9 +1,3 @@
-vbs
-vdev
-vdk
-vds
-vtx
-
 [docker]
 vdev
 vdk
@@ -12,11 +6,6 @@ vdk
 
 [harden]
 vbs
-
-[hypervisor]
-vtx
-
-[lxc]
 
 [monitor]
 vbs
@@ -28,10 +17,15 @@ vtx
 [nfs_servers]
 vds
 
-[pis]
-
-[prometheus]
+[postfix]
+vbs
 vdev
+vdk
+vds
+vtx
+
+[proxmox]
+vtx
 
 [ruby]
 
@@ -50,3 +44,6 @@ vbs
 vdev
 vdk
 vds
+
+[wireguard]
+vbs

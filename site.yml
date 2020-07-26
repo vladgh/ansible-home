@@ -1,11 +1,23 @@
 ---
+# Playbooks
 - import_playbook: playbooks/ansible.yml
+- import_playbook: playbooks/upgrade.yml
+- import_playbook: playbooks/proxmox.yml
 - import_playbook: playbooks/common.yml
+- import_playbook: playbooks/dns.yml
 - import_playbook: playbooks/firewall.yml
 - import_playbook: playbooks/harden.yml
+- import_playbook: playbooks/monitor.yml
 - import_playbook: playbooks/virtual.yml
+- import_playbook: playbooks/postfix.yml
 - import_playbook: playbooks/docker.yml
 - import_playbook: playbooks/ruby.yml
-- import_playbook: playbooks/monitor.yml
-- import_playbook: playbooks/nas.yml
+- import_playbook: playbooks/wireguard.yml
+- import_playbook: playbooks/nfs.yml
+- import_playbook: playbooks/samba.yml
+
+# Development
+- import_playbook: playbooks/vdev.yml
+
+# Slack Notification
 - import_playbook: playbooks/slack.yml

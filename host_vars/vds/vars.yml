@@ -1,14 +1,24 @@
 ---
+# System
+timezone: US/Central
+
+# Packages
+additional_packages:
+  - trash-cli
+  - smartmontools
+
 # Accounts
 local_groups:
   - name: admins
+    gid: 8236
     system: yes
     sudo: yes
   - name: vgh
-    gid: 8844
+    gid: 8446
 local_users:
   - name: vlad
     comment: Vlad Ghinea
+    uid: 8523
     groups:
       - admins
       - vgh
@@ -18,36 +28,62 @@ local_users:
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE0yyqRUbBGOW9PcYyuaUMaRi/EFwL59E3wwMn5dJAKQ vlad@ghn.me
   - name: alice
     shell: /usr/sbin/nologin
+    uid: 9828
     create_home: no
     groups:
       - vgh
 
+# EMail
+postfix_relayhost: smtp.sendgrid.net
+postfix_relayhost_port: 587
+postfix_relaytls: true
+postfix_smtp_tls_cafile: /etc/ssl/certs/ca-certificates.crt
+postfix_sasl_user: apikey
+postfix_sasl_password: "{{ vault_postfix_sasl_password }}"
+postfix_aliases:
+  - user: root
+    alias: vlad@ghn.me
+postfix_header_checks:
+  - pattern: '/From:.*/'
+    action: 'REPLACE'
+    text: 'From: Vlad <vlad@ghn.me>'
+
 # Mount points
 mount_points:
-  - name: WD2T
+  - name: VPool
+    path: /vpool
+    src: UUID="c30cba89-5583-4b79-a1c3-9f28a5dd44e4"
+    fstype: ext4
+  - name: XData
     path: /data
-    src: UUID="78056259-01e8-4d4b-bb3c-edc4ed1e8171"
+    src: UUID="eec67db9-47a7-4fa7-af6c-8c82ef5160b0"
     fstype: ext4
-  - name: EncryptedDataStore
-    path: /data/encrypted
-    src: UUID="0b86bdb1-33b7-4a47-810b-ebc0392f63f4"
-    fstype: ext4
+  # - name: WD2T
+  #   path: /data
+  #   src: UUID="78056259-01e8-4d4b-bb3c-edc4ed1e8171"
+  #   fstype: ext4
+  # - name: VPoolBackup
+  #   path: /vpool/backup
+  #   src: 192.168.10.254:/vpool/backup
+  #   opts: hard,rsize=1048576,wsize=1048576,timeo=600,retrans=2,_netdev
+  #   fstype: nfs
 
 # NFS Server
 nfs_exports:
-  - '/data/store *(rw,sync,all_squash,anonuid=1000,anongid=1000,no_subtree_check)'
-  - '/data/vm *(rw,sync,all_squash,anonuid=1000,anongid=1000,no_subtree_check)'
+  - '/data/home 192.168.10.10(rw,sync,no_subtree_check)'
+  - '/vpool/media 192.168.10.4(rw,sync,no_subtree_check)'
 
 # Samba Server
 samba_netbios_name: VDS
 samba_server_string: "Vlad Data Store"
 samba_workgroup: WORKGROUP
 samba_load_printers: 'no'
+samba_apple_extensions: 'yes'
 samba_users: "{{ vault_samba_users }}"
 samba_shares:
-  - name: DataStore
-    comment: 'Data Store'
-    path: '/data/store'
+  - name: HOME
+    comment: 'Home Data'
+    path: '/data/home'
     public: 'no'
     writable: 'yes'
     browseable: 'yes'
@@ -58,16 +94,16 @@ samba_shares:
     force_create_mode: '0664'
     directory_mode: '0775'
     force_directory_mode: '0775'
-  - name: EncryptedDataStore
-    comment: 'Encrypted Data Store'
-    path: '/data/encrypted/store'
+  - name: VAULT
+    comment: 'Data Vault'
+    path: '/vpool/data'
     public: 'no'
     writable: 'yes'
-    browseable: 'no'
+    browseable: 'yes'
     valid_users: 'vlad alice @vgh'
     owner: 'vlad'
     group: 'vgh'
-    create_mode: '0660'
-    force_create_mode: '0660'
-    directory_mode: '0770'
-    force_directory_mode: '0770'
+    create_mode: '0664'
+    force_create_mode: '0664'
+    directory_mode: '0775'
+    force_directory_mode: '0775'

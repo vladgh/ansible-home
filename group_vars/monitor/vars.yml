@@ -1,7 +1,5 @@
 ---
 # Logs
-install_ca_certificates: 'yes'
-remote_logs_enabled: 'yes'
 remote_logs_server: 'listener.logz.io'
 remote_logs_port: '5001'
 remote_logs_permitted_peer: '*.logz.io'

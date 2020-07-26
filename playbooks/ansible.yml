@@ -9,11 +9,9 @@
       update_cache: yes
       force_apt_get: yes
       cache_valid_time: 86400 # Update the apt cache if its older than a day
-  - name: Install Python for Ansible
+  - name: Install required packages
     package:
-      name:
-        - python3
-        - sudo
+      name: [sudo, python3]
       state: present
   - name: Ansible user
     user:

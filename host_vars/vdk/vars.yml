@@ -1,4 +1,39 @@
 ---
+# System
+timezone: US/Central
+
+# Accounts
+local_groups:
+  - name: admins
+    gid: 8236
+    system: yes
+    sudo: yes
+  - name: vgh
+    gid: 8446
+local_users:
+  - name: vlad
+    comment: Vlad Ghinea
+    uid: 8523
+    groups:
+      - admins
+      - vgh
+    append: 'yes'
+    shell: /bin/bash
+    authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE0yyqRUbBGOW9PcYyuaUMaRi/EFwL59E3wwMn5dJAKQ vlad@ghn.me
+
+# Mount points
+mount_points:
+  - name: Media
+    path: /vpool/media
+    src: 192.168.10.11:/vpool/media
+    opts: soft
+    fstype: nfs
+
+# Packages
+additional_packages:
+  - trash-cli
+
 # Docker
 docker_users:
   - vlad
@@ -10,10 +45,17 @@ cron_jobs:
     hour: '3'
     job: docker system prune --all --force 2>&1 | /usr/bin/logger -t DockerMaintenance
 
-# Mount points
-mount_points:
-  - name: DataStore
-    path: /data/store
-    src: 192.168.1.11:/data/store
-    opts: hard,rsize=1048576,wsize=1048576,timeo=600,retrans=2,_netdev
-    fstype: nfs
+# EMail
+postfix_relayhost: smtp.sendgrid.net
+postfix_relayhost_port: 587
+postfix_relaytls: true
+postfix_smtp_tls_cafile: /etc/ssl/certs/ca-certificates.crt
+postfix_sasl_user: apikey
+postfix_sasl_password: "{{ vault_postfix_sasl_password }}"
+postfix_aliases:
+  - user: root
+    alias: vlad@ghn.me
+postfix_header_checks:
+  - pattern: '/From:.*/'
+    action: 'REPLACE'
+    text: 'From: Vlad <vlad@ghn.me>'

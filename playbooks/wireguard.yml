@@ -1,0 +1,88 @@
+---
+- name: WireGuard Configuration
+  hosts: wireguard
+  become: yes
+  vars:
+    sysctl_config:
+      net.ipv4.ip_forward: 1
+      net.ipv4.conf.all.forwarding: 1
+      net.ipv6.conf.all.forwarding: 1
+  tasks:
+    - name: Ensure WireGuard package is installed
+      apt:
+        name:
+          - wireguard
+          - wireguard-tools
+    - name: Change various sysctl-settings
+      sysctl:
+        name: '{{ item.key }}'
+        value: '{{ item.value }}'
+        sysctl_set: yes
+        state: present
+        reload: yes
+      with_dict: '{{ sysctl_config }}'
+    - name: Ensure Wireguard directory exists
+      file:
+        path: /etc/wireguard
+        state: directory
+        mode: '700'
+    - name: Install server config
+      copy:
+        content: |
+          [Interface]
+          Address = {{ wireguard_server['Address'] }}
+          ListenPort = {{ wireguard_server['Port'] }}
+          PrivateKey = {{ wireguard_server['PrivateKey'] }}
+          PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ wireguard_server['NetworkInterface'] }} -j MASQUERADE; ip6tables -A FORWARD -i %i -j ACCEPT; ip6tables -A FORWARD -o %i -j ACCEPT; ip6tables -t nat -A POSTROUTING -o {{ wireguard_server['NetworkInterface'] }} -j MASQUERADE
+          PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ wireguard_server['NetworkInterface'] }} -j MASQUERADE; ip6tables -D FORWARD -i %i -j ACCEPT; ip6tables -D FORWARD -o %i -j ACCEPT; ip6tables -t nat -D POSTROUTING -o {{ wireguard_server['NetworkInterface'] }} -j MASQUERADE
+          {% for client in wireguard_clients %}
+
+          # {{ client }}
+          [Peer]
+          PublicKey = {{ wireguard_clients[client]['PublicKey'] }}
+          PresharedKey = {{ wireguard_clients[client]['PresharedKey'] }}
+          AllowedIPs = {{ wireguard_clients[client]['ServerAllowedIPs'] }}
+          PersistentKeepalive = 25
+          {% endfor %}
+        dest: "/etc/wireguard/{{ wireguard_server['Interface'] }}.conf"
+        mode: '600'
+      notify:
+        - Restart WireGuard
+    - name: Generate client config
+      no_log: true
+      copy:
+        content: |
+          [Interface]
+          PrivateKey = {{ item.value['PrivateKey'] }}
+          Address = {{ item.value['Address'] }}
+          DNS = 1.1.1.1, 1.0.0.1
+
+          [Peer]
+          Endpoint = {{ wireguard_server['Endpoint'] }}
+          PublicKey = {{ wireguard_server['PublicKey'] }}
+          PresharedKey = {{ item.value['PresharedKey'] }}
+          AllowedIPs = {{ item.value['ClientAllowedIPs'] }}
+        dest: "/etc/wireguard/wg_{{ item.key }}.conf"
+        mode: '600'
+      with_dict: "{{ wireguard_clients }}"
+      notify:
+        - Restart WireGuard
+  handlers:
+    - name: Restart WireGuard
+      service:
+        name: "wg-quick@{{ wireguard_server['Interface'] }}"
+        enabled: yes
+        state: restarted
+
+# # MISC
+# # Start Wireguard (wg-quick up wg0 OR wg-quick down wg0)
+# sudo systemctl start wg-quick@wg0
+# # Enable the Wireguard service to automatically restart on boot
+# sudo systemctl enable wg-quick@wg0
+# # Check if the VPN tunnel is running with the following two commands
+# sudo wg show
+# sudo ifconfig wg0
+# sudo systemctl status wg-quick@wg0
+# sudo systemctl restart wg-quick@wg0
+# # Generate client QR code
+# qrencode -t ansiutf8 < ~/projects/.vgh/wg.home.ghn.me/clients/iPhoneV/wg0.conf

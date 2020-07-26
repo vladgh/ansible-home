@@ -8,5 +8,3 @@
       when: timezone is defined and timezone
     - role: geerlingguy.swap
       when: swap_file_enabled is defined and swap_file_enabled|bool
-    - role: vladgh.smtp
-      when: smtp_server_address is defined and smtp_server_address
