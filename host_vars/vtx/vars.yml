@@ -3,6 +3,7 @@
 additional_packages:
   - tmux
   - vim
+  - lm-sensors
 
 # EMail
 postfix_relayhost: smtp.sendgrid.net
