@@ -22,14 +22,6 @@ local_users:
     authorized_keys:
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE0yyqRUbBGOW9PcYyuaUMaRi/EFwL59E3wwMn5dJAKQ vlad@ghn.me
 
-# Mount points
-mount_points:
-  - name: Data
-    path: /data/home
-    src: 192.168.10.11:/data/home
-    opts: soft
-    fstype: nfs
-
 # Docker
 docker_users:
   - vlad

@@ -54,10 +54,10 @@ mount_points:
     path: /vpool
     src: UUID="c30cba89-5583-4b79-a1c3-9f28a5dd44e4"
     fstype: ext4
-  - name: XData
-    path: /data
-    src: UUID="eec67db9-47a7-4fa7-af6c-8c82ef5160b0"
-    fstype: ext4
+  # - name: XData
+  #   path: /data
+  #   src: UUID="eec67db9-47a7-4fa7-af6c-8c82ef5160b0"
+  #   fstype: ext4
   # - name: WD2T
   #   path: /data
   #   src: UUID="78056259-01e8-4d4b-bb3c-edc4ed1e8171"
@@ -70,7 +70,6 @@ mount_points:
 
 # NFS Server
 nfs_exports:
-  - '/data/home 192.168.10.10(rw,sync,no_subtree_check)'
   - '/vpool/media 192.168.10.4(rw,sync,no_subtree_check)'
 
 # Samba Server
@@ -83,7 +82,7 @@ samba_users: "{{ vault_samba_users }}"
 samba_shares:
   - name: HOME
     comment: 'Home Data'
-    path: '/data/home'
+    path: '/vpool/home'
     public: 'no'
     writable: 'yes'
     browseable: 'yes'
@@ -97,6 +96,19 @@ samba_shares:
   - name: VAULT
     comment: 'Data Vault'
     path: '/vpool/data'
+    public: 'no'
+    writable: 'yes'
+    browseable: 'yes'
+    valid_users: 'vlad alice @vgh'
+    owner: 'vlad'
+    group: 'vgh'
+    create_mode: '0664'
+    force_create_mode: '0664'
+    directory_mode: '0775'
+    force_directory_mode: '0775'
+  - name: MEDIA
+    comment: 'Media Share'
+    path: '/vpool/media'
     public: 'no'
     writable: 'yes'
     browseable: 'yes'
